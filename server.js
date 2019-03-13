@@ -104,6 +104,10 @@ app.get("/scrape", function (req, res) {
     db.Article.deleteMany({}).then(function (data) {
         res.json(data);
     }).catch(err => res.json(err));
+
+    db.Note.deleteMany({}).then(function (data) {
+        res.json(data);
+    }).catch(err => res.json(err));
     // First, we grab the body of the html with axios
     axios.get("https://www.npr.org/sections/news/").then(function (response) {
 
