@@ -1,0 +1,86 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Mongo Scraper</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/saved">Saved</a>
+            </li>
+
+        </ul>
+        <button id="scrape-btn" class="btn btn-danger mr-3">SCRAPE NEW ARTICLES!</button>
+        <button id="clear-btn" class="btn btn-danger">CLEAR ARTICLES!</button>
+    </div>
+
+</nav>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container text-center">
+        <h1 class="display-4">Mongo Scraper</h1>
+        <p class="lead">NPR News Edition</p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        {{#each articles}}
+        
+        <div id="{{_id}}" class="col-12 col-md-4">
+            <div class="card mb-3">
+                <img src="{{image}}" class="card-img-top" alt="{{title}}">
+                <div class="card-body">
+                    <h6 class="card-title">{{category}}</h6>
+                    <h5 class="card-title"><a class="text-decoration-none" href="{{link}}">{{title}}</a></h5>
+                    <p class="card-text">{{summary}}</p>
+                    <button data-id="{{_id}}" class="btn btn-success save">SAVE ARTICLE</button>
+                </div>
+            </div>
+        </div>
+       
+        {{/each}}
+    </div>
+</div>
+
+<script>
+    $("#scrape-btn").on("click", function (event) {
+        event.preventDefault();
+        $.ajax("/scrape", {
+            method: "GET"
+        }).then(function () {
+            
+            setTimeout(reload, 1000)
+        })
+    });
+
+    $("#clear-btn").on("click", function(event){
+        event.preventDefault();
+        console.log("HELLO");
+        $.ajax("/articles", {
+            method: "DELETE"
+        }).then(function(){
+            location.reload();
+        }).catch(err => console.log(err));
+    })
+
+    $(".save").on("click", function(event){
+        event.preventDefault();
+        var theId = $(this).data("id");
+        $.ajax("/articles/"+theId, {
+            method: "PUT",
+            data: {saved: true}
+        }).then(function(data){
+            location.reload();
+        }).catch(err => console.log(err));
+    })
+
+
+    function reload(){
+        location.reload();
+    }
+
+</script>
